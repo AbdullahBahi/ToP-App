@@ -18,7 +18,7 @@ def ensure_serializable(obj):
         return obj
 
 def get_units_data(unit_code):
-    unit_data = pd.read_csv('D:/Prometheus/web page/units_data.csv')
+    unit_data = pd.read_csv('units_data.csv')
     project_name = unit_data.loc[unit_data['Unit Code'] == unit_code, 'Project'].values[0]
     n_bedrooms = unit_data.loc[unit_data['Unit Code'] == unit_code, 'No. of Bed Rooms'].values[0]
     finishing = unit_data.loc[unit_data['Unit Code'] == unit_code, 'Finishing Specs.'].values[0]
