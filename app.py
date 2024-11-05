@@ -2,6 +2,10 @@ from flask import Flask, request, jsonify
 import pandas as pd
 from datetime import datetime, timedelta
 import numpy as np
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 app = Flask(__name__)
 
@@ -18,7 +22,11 @@ def ensure_serializable(obj):
         return obj
 
 def get_units_data(unit_code):
-    unit_data = pd.read_csv('units_data.csv')
+    logging.debug('Trying to read data ..')
+    try:
+        unit_data = pd.read_csv('units_data.csv')
+    except:
+        logging.debug('Failed to read data')
     project_name = unit_data.loc[unit_data['Unit Code'] == unit_code, 'Project'].values[0]
     n_bedrooms = unit_data.loc[unit_data['Unit Code'] == unit_code, 'No. of Bed Rooms'].values[0]
     finishing = unit_data.loc[unit_data['Unit Code'] == unit_code, 'Finishing Specs.'].values[0]
