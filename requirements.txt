@@ -1,2 +1,6 @@
 gunicorn
 Flask
+pandas
+numpy
+logging
+datetime
