@@ -73,7 +73,7 @@ def calculate_period_rate(interest_rate, periods_per_year):
     return (1 + interest_rate) ** (1 / periods_per_year) - 1
 
 # Calculate installment payment amounts and dates
-def calculate_installments(unit_code, tenor_years, periods_per_year, input_pmts, interest_rate=0.294, base_dp=0.05, base_tenor_years=5, base_periods_per_year=4, max_discount=0.25):
+def calculate_installments(unit_code, tenor_years, periods_per_year, contract_date=None, input_pmts, interest_rate=0.294, base_dp=0.05, base_tenor_years=5, base_periods_per_year=4, max_discount=0.25):
     # Get unit info
     unit_info = get_units_data(unit_code)
     base_price = unit_info['Base Price']
@@ -140,8 +140,12 @@ def calculate_installments(unit_code, tenor_years, periods_per_year, input_pmts,
     pmt_amounts = [percent * price_with_interest for percent in calculated_pmt_percentages]
 
     # Calculate payments dates
-    pmt_dates = [(datetime.today() + timedelta(days=int(365 / periods_per_year) * i)).strftime("%Y-%m-%d") for i in range(n+1)]
-
+    if contract_date is None:
+        pmt_dates = [(datetime.today() + timedelta(days=int(365 / periods_per_year) * i)).strftime("%Y-%m-%d") for i in range(n+1)]
+    else:
+        contract_date = datetime.strptime(contract_date, "%Y-%m-%d")
+        pmt_dates = [(contract_date + timedelta(days=int(365 / periods_per_year) * i)).strftime("%Y-%m-%d") for i in range(n+1)]
+        
     # calculate cumulative payments percentage
     cumulative_pmt_percent = [sum(calculated_pmt_percentages[:i+1]) for i in range(n+1)]
 
@@ -177,12 +181,14 @@ def calculate_installments_api():
         tenor_years = data['tenor_years']
         periods_per_year = data['periods_per_year']
         input_pmts = data['input_pmts']
+        contract_date = data['contract_date']
         input_pmts = {int(k):v for k, v in input_pmts.items()}
         # Call the calculate_installments function
         payment_schedule = calculate_installments(
             unit_code=unit_code,
             tenor_years=tenor_years,
             periods_per_year=periods_per_year,
+            contract_date=contract_date,
             input_pmts=input_pmts
         )
         return jsonify(payment_schedule), 200
