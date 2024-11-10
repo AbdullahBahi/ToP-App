@@ -107,7 +107,10 @@ def calculate_installments(unit_code, tenor_years, periods_per_year, contract_da
     n = int(tenor_years * periods_per_year)
 
     # Extract down payment
-    dp_percentage = input_pmts[0]
+    if not len(input_pmts):
+        dp_percentage = base_dp
+    else:
+        dp_percentage = input_pmts[0]
 
     # Calculate the equal remaining payments after deducting the down payment and custom payments
     remaining_percentage = (1 - dp_percentage - sum(list(input_pmts.values())[1:])) / (n - len(list(input_pmts.values())[1:]))
