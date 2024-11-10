@@ -104,7 +104,14 @@ def calculate_installments(unit_code, tenor_years, periods_per_year, contract_da
     ## CALCULATING NEW NPV
     ########################################################
     # Calculate number of payments
-    n = int(tenor_years * periods_per_year)
+    if tenor_years is None and periods_per_year is not None:
+        n = int(base_tenor_years * periods_per_year)
+    elif periods_per_year is None and tenor_years is not None:
+        n = int(tenor_years * base_periods_per_year)
+    elif periods_per_year is None and tenor_years is None:
+        n = int(base_tenor_years * base_periods_per_year)
+    else:
+        n = int(tenor_years * periods_per_year)
 
     # Extract down payment
     if not len(input_pmts):
