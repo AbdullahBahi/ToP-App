@@ -99,20 +99,16 @@ def calculate_installments(unit_code, tenor_years, periods_per_year, contract_da
     base_npv = base_dp
     for i, pmt_percent in enumerate(base_percentages[1:], start=1):
         base_npv += pmt_percent * (1 + base_period_rate) ** (-i)
-
     ########################################################
     ## CALCULATING NEW NPV
     ########################################################
     # Calculate number of payments
-    if tenor_years==0 and periods_per_year!=0:
-        n = int(base_tenor_years * periods_per_year)
-    elif periods_per_year ==0 and tenor_years !=0:
-        n = int(tenor_years * base_periods_per_year)
-    elif periods_per_year ==0 and tenor_years ==0:
-        n = int(base_tenor_years * base_periods_per_year)
-    else:
-        n = int(tenor_years * periods_per_year)
-
+    if tenor_years == 0:
+        tenor_years = base_tenor_years
+    if periods_per_year == 0:
+        periods_per_year = base_periods_per_year
+    n = int(tenor_years * periods_per_year)
+    
     # Extract down payment
     if not len(input_pmts):
         dp_percentage = base_dp
@@ -128,15 +124,15 @@ def calculate_installments(unit_code, tenor_years, periods_per_year, contract_da
     for k, v in input_pmts.items():
         calculated_pmt_percentages[k] = v
     calculated_pmt_percentages = [p if p!=0 else remaining_percentage for p in calculated_pmt_percentages]
-
+    
     # Calculate discount rate for the period
     period_rate = calculate_period_rate(interest_rate, periods_per_year)
-    
+
     # Calculate the Net Present Value (NPV) of the calculated payments percentages using the period rate
     new_npv = dp_percentage
     for i, pmt_percent in enumerate(calculated_pmt_percentages[1:], start=1):
         new_npv += pmt_percent * (1 + period_rate) ** (-i)
-
+    
     ########################################################
     ## CALCULATING PAYMENTS SCHEDULE
     ########################################################
@@ -193,6 +189,7 @@ def calculate_installments_api():
         input_pmts = data['input_pmts']
         contract_date = data['contract_date']
         input_pmts = {int(k):v for k, v in input_pmts.items()}
+
         # Call the calculate_installments function
         payment_schedule = calculate_installments(
             unit_code=unit_code,
