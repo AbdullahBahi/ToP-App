@@ -73,7 +73,7 @@ def calculate_period_rate(interest_rate, periods_per_year):
     return (1 + interest_rate) ** (1 / periods_per_year) - 1
 
 # Calculate installment payment amounts and dates
-def calculate_installments(unit_code, tenor_years, periods_per_year, contract_date=None, input_pmts, interest_rate=0.294, base_dp=0.05, base_tenor_years=5, base_periods_per_year=4, max_discount=0.25):
+def calculate_installments(unit_code, tenor_years, periods_per_year, contract_date, input_pmts, interest_rate=0.294, base_dp=0.05, base_tenor_years=5, base_periods_per_year=4, max_discount=0.25):
     # Get unit info
     unit_info = get_units_data(unit_code)
     base_price = unit_info['Base Price']
