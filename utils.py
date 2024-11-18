@@ -83,10 +83,8 @@ def calculate_period_rate(interest_rate, periods_per_year):
 def caclulate_years_till_delivery(contract_date, delivery_date):
     print('aaa')
     print(contract_date)
-    contract_date = datetime.strptime(contract_date, "%Y-%m-%d")
-    print('aab')
     delivery_date = datetime.strptime(delivery_date, "%m/%d/%Y")
-    print('aac')
+    print('aab')
     n_years = (delivery_date-contract_date).days / 365
     return n_years
 
@@ -254,6 +252,12 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
 
     del unit_info['Project Policy']
     
+    if contract_date is None:
+        print(14)
+        contract_date = datetime.today()
+    else:
+        contract_date = datetime.strptime(contract_date, "%Y-%m-%d")
+        
     print(1)
     if project_policy['use_static_base_npv']:
         print(2)
@@ -290,6 +294,8 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
     max_tenor_years = int((1-project_policy['constraints']['first_year_min'])/project_policy['constraints']['annual_min']) + 1 ## Force maximum tenor years based on project constraints
     if tenor_years > max_tenor_years:
         tenor_years = max_tenor_years
+    elif tenor_years == 0:
+        tenor_years = base_tenor_years
     n = int(tenor_years * periods_per_year)
     print(5)
     # Extract down payment
@@ -336,14 +342,8 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
        maintenance_payments = gas_payments = [0,]*(n+1)
        
     # Calculate payments dates
-    if contract_date is None:
-        print(14)
-        pmt_dates = [(datetime.today() + timedelta(days=int(365 / periods_per_year) * i)).strftime("%Y-%m-%d") for i in range(n+1)]
-    else:
-        contract_date = datetime.strptime(contract_date, "%Y-%m-%d")
-        pmt_dates = [(contract_date + timedelta(days=int(365 / periods_per_year) * i)).strftime("%Y-%m-%d") for i in range(n+1)]
-        print(15)
-    print(pmt_dates[8])
+    pmt_dates = [(contract_date + timedelta(days=int(365 / periods_per_year) * i)).strftime("%Y-%m-%d") for i in range(n+1)]
+    print(15)
     # calculate cumulative payments percentage
     cumulative_pmt_percent = [sum(calculated_pmt_percentages[:i+1]) for i in range(n+1)]
     print(16)

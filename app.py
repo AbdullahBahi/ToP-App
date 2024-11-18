@@ -19,6 +19,7 @@ def calculate_installments_api():
         payment_frequency = data['payment_frequency']
         contract_date = data['contract_date']
         input_pmts = data['input_pmts']
+        contract_date = data['contract_date']
         input_pmts = {int(k):v for k, v in input_pmts.items()}
 
         # Get unit info
