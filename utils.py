@@ -296,6 +296,8 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
         tenor_years = max_tenor_years
     elif tenor_years == 0:
         tenor_years = base_tenor_years
+    print("max_tenor_years", max_tenor_years)
+    print("tenor_years", tenor_years)
     n = int(tenor_years * periods_per_year)
     print(5)
     # Extract down payment
