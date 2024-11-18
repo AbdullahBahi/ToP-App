@@ -172,21 +172,24 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
 
     if sum(pmt_percentages) > 1:
         sum_after_first_year = sum(pmt_percentages[periods_per_year+1:])
+        print(3241)
         total_custom_payments_after_first_year = 0
         num_custom_payments_after_first_year = 0
+        print(3242)
         for k in input_pmts.keys():
             if k <= periods_per_year:
                 continue
             total_custom_payments_after_first_year += pmt_percentages[k]
             num_custom_payments_after_first_year += 1
+        print(3243)
         excess = sum(pmt_percentages) - 1
-
+        print(3244)
         new_remaining_percentage = (sum_after_first_year-total_custom_payments_after_first_year-excess) / (len(pmt_percentages[periods_per_year+1:]) - num_custom_payments_after_first_year)
-
+        print(3245)
         for i, pmt in pmt_percentages[periods_per_year+1:]:
             if pmt == remaining_percentage:
                 pmt_percentages[periods_per_year+1+i] = new_remaining_percentage
-        
+        print(3246)
         remaining_percentage = new_remaining_percentage
         
     ## Handle cash till delivery constraint
