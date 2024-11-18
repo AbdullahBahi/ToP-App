@@ -299,7 +299,10 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
     n = int(tenor_years * periods_per_year)
     print(5)
     # Extract down payment
-    dp_percentage = input_pmts[0]
+    if len(input_pmts) == 0:
+        dp_percentage = base_dp
+    else:
+        dp_percentage = input_pmts[0]
     print(6)
     # Create a list with the down payment, the custom paymants, and the auto-filled payments, representing the final schedule of payments
     calculated_pmt_percentages = [0,]*(n+1)
