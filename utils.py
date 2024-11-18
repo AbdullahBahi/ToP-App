@@ -166,7 +166,7 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
     first_year_payments = pmt_percentages[:periods_per_year+1]
     print('first_year_payments: ',sum(first_year_payments))
     if sum(first_year_payments) < constraints['first_year_min']:
-        pmt_percentages[periods_per_year+1] = constraints['first_year_min'] - sum(first_year_payments[:-1])
+        pmt_percentages[periods_per_year] = constraints['first_year_min'] - sum(first_year_payments[:-1])
     print(sum(pmt_percentages[:periods_per_year+1]), constraints['first_year_min'])
     print(324)
 
@@ -175,7 +175,7 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
         total_custom_payments_after_first_year = 0
         num_custom_payments_after_first_year = 0
         for k in input_pmts.keys():
-            if k < periods_per_year+1:
+            if k <= periods_per_year:
                 continue
             total_custom_payments_after_first_year += pmt_percentages[k]
             num_custom_payments_after_first_year += 1
