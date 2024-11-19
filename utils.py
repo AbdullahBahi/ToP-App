@@ -336,6 +336,8 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
     ########################################################
     # Calculate the new price after interest (increase/decrease)
     price_with_interest = calculate_price_with_interest(base_npv, new_npv, max_discount, base_price)
+    print("price_with_interest", price_with_interest)
+    print(maintenance_fee_percent * price_with_interest)
     print(11)
     # Calulate the percentage of increase/decrease in the price over the interest-free price
     percentage_change = calculate_percentage_change(base_npv, new_npv, max_discount)
