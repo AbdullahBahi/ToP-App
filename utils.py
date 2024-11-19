@@ -374,11 +374,11 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
         print(75, len(cumulative_pmt_percent))
         if len(gas_payments) < len(pmt_type):
             print(1)
-            gas_payments += [0,] * len(maintenance_payments)-len(gas_payments)
+            gas_payments += [0,] * (len(maintenance_payments)-len(gas_payments))
             print(76, len(gas_payments))
         if len(maintenance_payments) < len(pmt_type):
             print(2)
-            maintenance_payments += [0,] * len(gas_payments)-len(maintenance_payments)
+            maintenance_payments += [0,] * (len(gas_payments)-len(maintenance_payments))
             print(77, len(maintenance_payments))
         print(78)
     payemnts_schedule = {
