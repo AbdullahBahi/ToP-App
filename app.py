@@ -26,7 +26,6 @@ def calculate_installments_api():
         unit_info = get_units_data(unit_code)
 
         # Call the calculate_installments function based on the selected project
-        print(0)
         payment_schedule = calculate_installments(
             unit_info=unit_info,
             tenor_years=tenor_years,
