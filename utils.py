@@ -293,7 +293,6 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
     ########################################################
     # Calculate number of payments
     periods_per_year = PERIODS_PER_YEAR[payment_frequency.lower()]
-    
     n = int(tenor_years * periods_per_year)
 
     # Extract down payment
@@ -312,7 +311,7 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
     # Calculate discount rate for the period
     period_rate = calculate_period_rate(interest_rate, periods_per_year)
     # Calculate the Net Present Value (NPV) of the calculated payments percentages using the period rate
-    new_npv = dp_percentage
+    new_npv = calculated_pmt_percentages[0]
     for i, pmt_percent in enumerate(calculated_pmt_percentages[1:], start=1):
         new_npv += pmt_percent * (1 + period_rate) ** (-i)
     
