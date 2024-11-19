@@ -70,10 +70,16 @@ def calculate_percentage_change(base_npv, new_npv, max_discount):
     
 # Calculate price with interest
 def calculate_price_with_interest(base_npv, new_npv, max_discount, base_price):
+    print("base_npv", base_npv)
+    print("new_npv", new_npv)
+    print("max_discount", max_discount)
+    print("base_base_pricenpv", base_price)
     if base_npv >= new_npv:
         percentage_change = (base_npv / new_npv) - 1
     else:
         percentage_change = ((base_npv / new_npv) - 1) * (max_discount / (1 - base_npv))
+    print("percentage_change", percentage_change)
+    print("price_with_interest", (1 + percentage_change) * base_price)
     return (1 + percentage_change) * base_price
 
 # Calculate period rate
@@ -191,7 +197,7 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
         
         if sum(cummulative_payments) < (year * constraints['annual_min']) + constraints['first_year_min']:
             pmt_percentages[(year+1)*periods_per_year] = (year * constraints['annual_min']) + constraints['first_year_min'] - sum(cummulative_payments[:-1])
-            
+
     ## Handle cash till delivery constraint
     years_till_delivery = caclulate_years_till_delivery(contract_date, delivery_date)
     
