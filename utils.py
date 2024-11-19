@@ -281,6 +281,7 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
         # Apply constraints on the calculated list of payment percentages
         base_percentages = apply_constraints(base_percentages, base_tenor_years, base_periods_per_year, {}, project_policy['constraints'], contract_date, unit_info['Delivery Date'])
         print(33)
+        print(base_percentages)
         # Calculate discount rate for the period
         base_period_rate = calculate_period_rate(interest_rate, base_periods_per_year)
         print(34)
@@ -288,6 +289,7 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
         base_npv = base_dp
         for i, pmt_percent in enumerate(base_percentages[1:], start=1):
             base_npv += pmt_percent * (1 + base_period_rate) ** (-i)
+        print(base_npv)
         print(4)
     ########################################################
     ## CALCULATING NEW NPV
@@ -316,6 +318,7 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
     # Apply constraints on the calculated list of payment percentages
     calculated_pmt_percentages = apply_constraints(calculated_pmt_percentages, tenor_years, periods_per_year, input_pmts, project_policy['constraints'], contract_date, unit_info['Delivery Date'])
     print(8)
+    print(calculated_pmt_percentages)
     # Calculate discount rate for the period
     period_rate = calculate_period_rate(interest_rate, periods_per_year)
     print(9)
@@ -323,6 +326,7 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
     new_npv = dp_percentage
     for i, pmt_percent in enumerate(calculated_pmt_percentages[1:], start=1):
         new_npv += pmt_percent * (1 + period_rate) ** (-i)
+    print(new_npv)
     print(10)
     ########################################################
     ## CALCULATING PAYMENTS SCHEDULE
