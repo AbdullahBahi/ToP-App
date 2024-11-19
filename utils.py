@@ -70,10 +70,15 @@ def calculate_percentage_change(base_npv, new_npv, max_discount):
     
 # Calculate price with interest
 def calculate_price_with_interest(base_npv, new_npv, max_discount, base_price):
+    print("base_npv", base_npv)
+    print("new_npv", new_npv)
+    print("max_discount", max_discount)
+    print("base_price", base_price)
     if base_npv >= new_npv:
         percentage_change = (base_npv / new_npv) - 1
     else:
         percentage_change = ((base_npv / new_npv) - 1) * (max_discount / (1 - base_npv))
+    print(percentage_change)
     return (1 + percentage_change) * base_price
 
 # Calculate period rate
