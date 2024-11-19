@@ -363,14 +363,24 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
     # Pack the data into a dictionary
     if len(gas_payments) > len(pmt_type) or len(maintenance_payments) > len(pmt_type):
         pmt_type += ["PMT "+str(i+1+len(pmt_type)) for i in range(max(len(gas_payments)-len(pmt_type), len(maintenance_payments)-len(pmt_type)))] 
+        print(71, len(pmt_type))
         pmt_dates += ['',] * max(len(gas_payments)-len(pmt_type), len(maintenance_payments)-len(pmt_type))
+        print(72, len(pmt_dates))
         calculated_pmt_percentages += [0,] * max(len(gas_payments)-len(pmt_type), len(maintenance_payments)-len(pmt_type))
+        print(73, len(calculated_pmt_percentages))
         pmt_amounts += [0,] * max(len(gas_payments)-len(pmt_type), len(maintenance_payments)-len(pmt_type))
+        print(74, len(pmt_amounts))
         cumulative_pmt_percent += [0,] * max(len(gas_payments)-len(pmt_type), len(maintenance_payments)-len(pmt_type))
+        print(75, len(cumulative_pmt_percent))
         if len(gas_payments) < len(pmt_type):
+            print(1)
             gas_payments += [0,] * max(len(gas_payments)-len(pmt_type), len(maintenance_payments)-len(pmt_type))
+            print(76, len(gas_payments))
         if len(maintenance_payments) < len(pmt_type):
+            print(2)
             maintenance_payments += [0,] * max(len(gas_payments)-len(pmt_type), len(maintenance_payments)-len(pmt_type))
+            print(77, len(maintenance_payments))
+        print(78)
     payemnts_schedule = {
         "Unit Info": unit_info,
         "Discount Rate [Per Period]": period_rate,
