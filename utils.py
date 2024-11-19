@@ -103,7 +103,7 @@ def calculate_gas_payments(policy, tenor_years, periods_per_year, contract_date,
     gas_fee = diffs[min(diffs.keys())]
     print('b')
     # Schedule gas fee
-    delivery_payment_index = int(years_till_delivery * periods_per_year)
+    delivery_payment_index = round(years_till_delivery * periods_per_year)
     n = tenor_years * periods_per_year
     gas_payments = [0,]*(n+1)
     print('c')
@@ -123,7 +123,7 @@ def calculate_maintenance_payments(policy, maintenance_fee, tenor_years, periods
     
     # Schedule gas fee
     years_till_delivery = caclulate_years_till_delivery(contract_date, delivery_date)
-    delivery_payment_index = int(years_till_delivery * periods_per_year)
+    delivery_payment_index = round(years_till_delivery * periods_per_year)
     n = tenor_years * periods_per_year
     maintenance_payments = [0,]*(n+1)
     print('x')
@@ -205,7 +205,7 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
     print(327)
     ctd = diffs[min(diffs.keys())]
     print(328)
-    delivery_payment_index = int(years_till_delivery * periods_per_year)
+    delivery_payment_index = round(years_till_delivery * periods_per_year)
     print(years_till_delivery, periods_per_year, delivery_payment_index)
     print(329)
     payments_till_delivery = pmt_percentages[:delivery_payment_index+1]
