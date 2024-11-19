@@ -2,9 +2,6 @@ from flask import Flask, request, jsonify
 
 from utils import calculate_installments, get_units_data
 
-import logging
-import sys
-
 app = Flask(__name__)
 
 @app.route('/calculate_installments', methods=['POST'])
