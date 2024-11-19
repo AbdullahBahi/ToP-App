@@ -183,7 +183,15 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
                 pmt_percentages[periods_per_year+1+i] = new_remaining_percentage
         
         remaining_percentage = new_remaining_percentage
+    
+    ## Handle cumulative minimum constraint 
+    for year in range(tenor_years):
+        # year_payments = pmt_percentages[(year*periods_per_year)+1:((year+1)*periods_per_year)+1]
+        cummulative_payments = pmt_percentages[:((year+1)*periods_per_year)+1]
         
+        if sum(cummulative_payments) < (year * constraints['annual_min']) + constraints['first_year_min']:
+            pmt_percentages[(year+1)*periods_per_year] = (year * constraints['annual_min']) + constraints['first_year_min'] - sum(cummulative_payments[:-1])
+            
     ## Handle cash till delivery constraint
     years_till_delivery = caclulate_years_till_delivery(contract_date, delivery_date)
     
@@ -219,14 +227,6 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
                 pmt_percentages[delivery_payment_index+1+i] = new_remaining_percentage
         
         remaining_percentage = new_remaining_percentage
-
-    ## Handle cumulative minimum constraint 
-    for year in range(tenor_years):
-        # year_payments = pmt_percentages[(year*periods_per_year)+1:((year+1)*periods_per_year)+1]
-        cummulative_payments = pmt_percentages[:((year+1)*periods_per_year)+1]
-        
-        if sum(cummulative_payments) < (year * constraints['annual_min']) + constraints['first_year_min']:
-            pmt_percentages[(year+1)*periods_per_year] = (year * constraints['annual_min']) + constraints['first_year_min'] - sum(cummulative_payments[:-1])
         
     return pmt_percentages
 
