@@ -381,6 +381,14 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
             maintenance_payments += [0,] * (len(gas_payments)-len(maintenance_payments))
             print(77, len(maintenance_payments))
         print(78)
+    
+    print("pmt_type", len(pmt_type))
+    print("pmt_dates", len(pmt_dates))
+    print("calculated_pmt_percentages", len(calculated_pmt_percentages))
+    print("pmt_amounts", len(pmt_amounts))
+    print("cumulative_pmt_percent", len(cumulative_pmt_percent))
+    print("gas_payments", len(gas_payments))
+    print("maintenance_payments", len(maintenance_payments))
     payemnts_schedule = {
         "Unit Info": unit_info,
         "Discount Rate [Per Period]": period_rate,
