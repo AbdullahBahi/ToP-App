@@ -152,7 +152,10 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
     print(322)
     # Calculate the equal remaining payments after deducting the down payment, first payment, and custom payments
     n = int(tenor_years * periods_per_year)
-    remaining_percentage = (1 - pmt_percentages[0] - pmt_percentages[1] - sum(list(input_pmts.values())[2:])) / (n - len(list(input_pmts.values())[1:]))
+    if len(list(input_pmts.values())[1:]) == 0:
+        remaining_percentage = (1 - pmt_percentages[0] - pmt_percentages[1] - sum(list(input_pmts.values())[2:])) / (n - 1)
+    else:
+        remaining_percentage = (1 - pmt_percentages[0] - pmt_percentages[1] - sum(list(input_pmts.values())[2:])) / (n - len(list(input_pmts.values())[1:]))
     print(pmt_percentages)
     print(remaining_percentage)
     for k, v in input_pmts.items():
