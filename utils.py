@@ -270,9 +270,18 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
         contract_date = datetime.strptime(contract_date, "%Y-%m-%d")
         
     print(1)
+    max_tenor_years = int((1-project_policy['constraints']['first_year_min'])/project_policy['constraints']['annual_min']) + 1 ## Force maximum tenor years based on project constraints
+    if tenor_years > max_tenor_years:
+        tenor_years = max_tenor_years
+    elif tenor_years == 0:
+        tenor_years = base_tenor_years
+
     if project_policy['use_static_base_npv']:
         print(2)
-        base_npv = project_policy['base_npv']
+        base_npvs = project_policy['base_npv']
+        base_npvs = {float(k):v for k, v in base_npvs.items()}
+        diffs = {abs(tenor_years-k):v for k, v in base_npvs.items()}
+        base_npv = diffs[min(diffs.keys())]
     else:
         print(3)
         ########################################################
@@ -304,11 +313,6 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
     ########################################################
     # Calculate number of payments
     periods_per_year = PERIODS_PER_YEAR[payment_frequency.lower()]
-    max_tenor_years = int((1-project_policy['constraints']['first_year_min'])/project_policy['constraints']['annual_min']) + 1 ## Force maximum tenor years based on project constraints
-    if tenor_years > max_tenor_years:
-        tenor_years = max_tenor_years
-    elif tenor_years == 0:
-        tenor_years = base_tenor_years
     print("max_tenor_years", max_tenor_years)
     print("tenor_years", tenor_years)
     n = int(tenor_years * periods_per_year)
