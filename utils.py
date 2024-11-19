@@ -323,32 +323,32 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
     
     # Calulate the percentage of increase/decrease in the price over the interest-free price
     percentage_change = calculate_percentage_change(base_npv, new_npv, max_discount)
-    
+    print(1)
     # Calculate a list of payments amounts
     pmt_amounts = [percent * price_with_interest for percent in calculated_pmt_percentages]
-    
+    print(2)
     # Calculate gas payments 
     if project_policy['gas_policy']['is_applied']:
         gas_payments = calculate_gas_payments(project_policy['gas_policy'], tenor_years, periods_per_year, contract_date, unit_info['Delivery Date'])
     else:
         gas_payments = gas_payments = [0,]*(n+1)
-    
+    print(3)
     # Calculate maintenance payments 
     if project_policy['maintenance_policy']['is_applied']:
         maintenance_payments = calculate_maintenance_payments(project_policy['maintenance_policy'], maintenance_fee_percent * price_with_interest, tenor_years, periods_per_year, contract_date, unit_info['Delivery Date'])
     else:
        maintenance_payments = gas_payments = [0,]*(n+1)
-       
+    print(4)
     # Calculate payments dates
     pmt_dates = [(contract_date + timedelta(days=int(365 / periods_per_year) * i)).strftime("%Y-%m-%d") for i in range(n+1)]
-
+    print(5)
     # calculate cumulative payments percentage
     cumulative_pmt_percent = [sum(calculated_pmt_percentages[:i+1]) for i in range(n+1)]
-
+    print(6)
     # Create a list of payment types
     pmt_type = ["PMT "+str(i+1) for i in range(n)]
     pmt_type = ["DP"] + pmt_type
-
+    print(7)
     # Pack the data into a dictionary
     payemnts_schedule = {
         "Unit Info": unit_info,
