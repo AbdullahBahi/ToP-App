@@ -105,6 +105,12 @@ def calculate_gas_payments(policy, tenor_years, periods_per_year, contract_date,
 
     # Schedule gas fee
     delivery_payment_index = round(years_till_delivery * periods_per_year)
+    
+    if years_till_delivery > tenor_years:
+        n = delivery_payment_index
+    else:
+        n = tenor_years * periods_per_year
+    
     n = tenor_years * periods_per_year
     gas_payments = [0,]*(n+1)
 
@@ -122,10 +128,15 @@ def calculate_maintenance_payments(policy, maintenance_fee, tenor_years, periods
     num_pmts = policy['num_pmts']
     scheduling = policy['scheduling']
     
-    # Schedule gas fee
+    # Schedule maintenance fee
     years_till_delivery = caclulate_years_till_delivery(contract_date, delivery_date)
     delivery_payment_index = round(years_till_delivery * periods_per_year)
-    n = tenor_years * periods_per_year
+    
+    if years_till_delivery > tenor_years:
+        n = delivery_payment_index
+    else:
+        n = tenor_years * periods_per_year
+    
     maintenance_payments = [0,]*(n+1)
 
     if scheduling == "at_delivery":
@@ -350,6 +361,16 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
     pmt_type = ["DP"] + pmt_type
     print(7)
     # Pack the data into a dictionary
+    if len(gas_payments) > len(pmt_type) or len(maintenance_payments) > len(pmt_type):
+        pmt_type += ["PMT "+str(i+1+len(pmt_type)) for i in range(max(len(gas_payments)-len(pmt_type), len(maintenance_payments)-len(pmt_type)))] 
+        pmt_dates += ['',] * max(len(gas_payments)-len(pmt_type), len(maintenance_payments)-len(pmt_type))
+        calculated_pmt_percentages += [0,] * max(len(gas_payments)-len(pmt_type), len(maintenance_payments)-len(pmt_type))
+        pmt_amounts += [0,] * max(len(gas_payments)-len(pmt_type), len(maintenance_payments)-len(pmt_type))
+        cumulative_pmt_percent += [0,] * max(len(gas_payments)-len(pmt_type), len(maintenance_payments)-len(pmt_type))
+        if len(gas_payments) < len(pmt_type):
+            gas_payments += [0,] * max(len(gas_payments)-len(pmt_type), len(maintenance_payments)-len(pmt_type))
+        if len(maintenance_payments) < len(pmt_type):
+            maintenance_payments += [0,] * max(len(gas_payments)-len(pmt_type), len(maintenance_payments)-len(pmt_type))
     payemnts_schedule = {
         "Unit Info": unit_info,
         "Discount Rate [Per Period]": period_rate,
