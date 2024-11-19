@@ -225,8 +225,8 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
         # year_payments = pmt_percentages[(year*periods_per_year)+1:((year+1)*periods_per_year)+1]
         cummulative_payments = pmt_percentages[:((year+1)*periods_per_year)+1]
         
-        if sum(cummulative_payments) < (year+1) * constraints['annual_min']:
-            pmt_percentages[(year+1)*periods_per_year] = (year+1) * constraints['annual_min'] - sum(cummulative_payments[:-1])
+        if sum(cummulative_payments) < (year * constraints['annual_min']) + constraints['first_year_min']:
+            pmt_percentages[(year+1)*periods_per_year] = (year * constraints['annual_min']) + constraints['first_year_min'] - sum(cummulative_payments[:-1])
         
     return pmt_percentages
 
