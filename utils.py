@@ -186,7 +186,7 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
         print(3244)
         new_remaining_percentage = (sum_after_first_year-total_custom_payments_after_first_year-excess) / (len(pmt_percentages[periods_per_year+1:]) - num_custom_payments_after_first_year)
         print(3245)
-        for i, pmt in pmt_percentages[periods_per_year+1:]:
+        for i, pmt in enumerate(pmt_percentages[periods_per_year+1:]):
             if pmt == remaining_percentage:
                 pmt_percentages[periods_per_year+1+i] = new_remaining_percentage
         print(3246)
