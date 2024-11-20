@@ -374,13 +374,13 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
     if len(gas_payments) > len(pmt_type) or len(maintenance_payments) > len(pmt_type):
         pmt_type += ["PMT "+str(i+1+len(pmt_type)) for i in range(max(len(gas_payments)-len(pmt_type), len(maintenance_payments)-len(pmt_type)))] 
         print(71, len(pmt_type))
-        pmt_dates += ['',] * max(len(gas_payments)-len(pmt_dates), len(maintenance_payments)-len(pmt_dates))
+        pmt_dates += [(contract_date + timedelta(days=int(365 / periods_per_year) * (i+len(pmt_dates)))).strftime("%Y-%m-%d") for i in range(max(len(gas_payments)-len(pmt_dates), len(maintenance_payments)-len(pmt_dates)))]
         print(72, len(pmt_dates))
         calculated_pmt_percentages += [0,] * max(len(gas_payments)-len(calculated_pmt_percentages), len(maintenance_payments)-len(calculated_pmt_percentages))
         print(73, len(calculated_pmt_percentages))
         pmt_amounts += [0,] * max(len(gas_payments)-len(pmt_amounts), len(maintenance_payments)-len(pmt_amounts))
         print(74, len(pmt_amounts))
-        cumulative_pmt_percent += [0,] * max(len(gas_payments)-len(cumulative_pmt_percent), len(maintenance_payments)-len(cumulative_pmt_percent))
+        cumulative_pmt_percent += [1,] * max(len(gas_payments)-len(cumulative_pmt_percent), len(maintenance_payments)-len(cumulative_pmt_percent))
         print(75, len(cumulative_pmt_percent))
         if len(gas_payments) < len(pmt_type):
             print(1)
