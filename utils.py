@@ -308,11 +308,13 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
     n = int(tenor_years * periods_per_year)
 
     excess_input = 0
-    for k, v in input_pmts.copy().items():
-        if k > n:
-            excess_input += input_pmts[k]
-            del input_pmts[k]
-    input_pmts[n] = excess_input
+    if len(input_pmts) != 0:
+        for k in input_pmts.copy().keys():
+            if k > n:
+                excess_input += input_pmts[k]
+                del input_pmts[k]
+        if excess_input > 0:
+            input_pmts[n] = excess_input
 
     # Extract down payment
     if len(input_pmts) == 0:
