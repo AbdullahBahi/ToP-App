@@ -271,7 +271,7 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
         tenor_years = max_tenor_years
     elif tenor_years == 0:
         tenor_years = base_tenor_years
-
+    print('A')
     if project_policy['use_static_base_npv']:
         base_npvs = project_policy['base_npv']
         base_npvs = {float(k):v for k, v in base_npvs.items()}
@@ -299,6 +299,7 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
         base_npv = base_dp
         for i, pmt_percent in enumerate(base_percentages[1:], start=1):
             base_npv += pmt_percent * (1 + base_period_rate) ** (-i)
+    print('B')
     ########################################################
     ## CALCULATING NEW NPV
     ########################################################
@@ -332,7 +333,7 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
     new_npv = calculated_pmt_percentages[0]
     for i, pmt_percent in enumerate(calculated_pmt_percentages[1:], start=1):
         new_npv += pmt_percent * (1 + period_rate) ** (-i)
-    
+    print('C')
     ########################################################
     ## CALCULATING PAYMENTS SCHEDULE
     ########################################################
