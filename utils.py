@@ -30,7 +30,7 @@ def get_units_data(unit_code):
     penthouse_area = unit_data.loc[unit_data['Unit Code'] == unit_code, 'Penthouse Area'].values[0]
     roof_terrace_area = unit_data.loc[unit_data['Unit Code'] == unit_code, 'Penthouse Area'].values[0] + unit_data.loc[unit_data['Unit Code'] == unit_code, 'Roof Terraces Area'].values[0]
     delivery_date = unit_data.loc[unit_data['Unit Code'] == unit_code, 'Development Delivery Date'].values[0]
-    base_price = unit_data.loc[unit_data['Unit Code'] == unit_code, 'Interest Free Unit Price include club'].values[0]
+    base_price = unit_data.loc[unit_data['Unit Code'] == unit_code, 'Interest Free Unit Price'].values[0]
     maintenance_percentage = unit_data.loc[unit_data['Unit Code'] == unit_code, 'Maintenance %'].values[0]
     unit_info = {
         'Unit Code': unit_code,
