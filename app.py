@@ -31,6 +31,7 @@ def calculate_installments_api():
             input_pmts=input_pmts,
         )
         json_data = json.dumps(payment_schedule, sort_keys=False)
+        print(json_data)
         return json_data, 200
     except Exception as e:
         return jsonify({'error': str(e)}), 400
