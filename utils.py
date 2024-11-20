@@ -252,7 +252,9 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
                 pmt_percentages[delivery_payment_index+1+i] = new_remaining_percentage
         print('ac15')
         remaining_percentage = new_remaining_percentage
-        
+    
+    if sum(pmt_percentages) < 1:
+        pmt_percentages[-1] = 1 - sum(pmt_percentages[:-1])
     return pmt_percentages, delivery_payment_index
 
 # Calculate installment payment amounts and dates
