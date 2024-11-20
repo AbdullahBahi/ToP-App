@@ -364,12 +364,18 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
     if project_policy['gas_policy']['num_pmts'] < 1:
         project_policy['gas_policy']['num_pmts'] = 1
     print(project_policy['gas_policy']['num_pmts'])
+    
     if project_policy['gas_policy']['is_applied']:
         gas_payments = calculate_gas_payments(project_policy['gas_policy'], tenor_years, periods_per_year, contract_date, unit_info['Delivery Date'])
     else:
         gas_payments = gas_payments = [0,]*(n+1)
     print(3)
-    # Calculate maintenance payments 
+    # Calculate maintenance payments
+    project_policy['maintenance_policy']['num_pmts'] = int(round(project_policy['maintenance_policy']['num_pmts'] * periods_per_year/base_periods_per_year))
+    if project_policy['maintenance_policy']['num_pmts'] < 1:
+        project_policy['maintenance_policy']['num_pmts'] = 1
+    print(project_policy['maintenance_policy']['num_pmts']) 
+    
     if project_policy['maintenance_policy']['is_applied']:
         maintenance_payments = calculate_maintenance_payments(project_policy['maintenance_policy'], maintenance_fee_percent * price_with_interest, tenor_years, periods_per_year, contract_date, unit_info['Delivery Date'])
     else:
