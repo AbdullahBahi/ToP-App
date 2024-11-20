@@ -317,7 +317,7 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
             input_pmts[n] = excess_input
     print(len(input_pmts), input_pmts)
     # Extract down payment
-    if len(input_pmts) == 0:
+    if len(input_pmts) == 0 or 0 not in input_pmts.keys():
         dp_percentage = base_dp
     else:
         dp_percentage = input_pmts[0]
