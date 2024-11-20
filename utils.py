@@ -256,6 +256,7 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
     base_dp = project_policy['base_dp']
     base_tenor_years = project_policy['base_tenor_years']
     base_payment_frequency = project_policy['base_payment_frequency']
+    base_periods_per_year = PERIODS_PER_YEAR[base_payment_frequency.lower()]
     max_discount = project_policy['constraints']['max_discount']
     maintenance_fee_percent = unit_info['Maintenance Fee']
 
@@ -282,7 +283,6 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
         ## CALCULATING BASE NPV
         ########################################################
         # Calculate number of base payments
-        base_periods_per_year = PERIODS_PER_YEAR[base_payment_frequency.lower()]
         n_base = int(base_tenor_years * base_periods_per_year)
         
         # Create a list with the down payment, the custom paymants, and the auto-filled payments, representing the final schedule of payments
