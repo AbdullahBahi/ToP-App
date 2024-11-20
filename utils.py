@@ -349,7 +349,9 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
     pmt_amounts = [percent * price_with_interest for percent in calculated_pmt_percentages]
     print(2)
     # Calculate gas payments 
-    print(project_policy['gas_policy']['num_pmts'], periods_per_year/base_periods_per_year)
+    print(project_policy['gas_policy']['num_pmts'])
+    print(periods_per_year)
+    print(base_periods_per_year)
     project_policy['gas_policy']['num_pmts'] = int(round(project_policy['gas_policy']['num_pmts'] * periods_per_year/base_periods_per_year))
     if project_policy['gas_policy']['num_pmts'] < 1:
         project_policy['gas_policy']['num_pmts'] = 1
