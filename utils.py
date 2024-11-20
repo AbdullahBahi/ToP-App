@@ -155,33 +155,33 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
     ## Handle minimum down payment constraint
     if pmt_percentages[0] < constraints['dp_min']:
         pmt_percentages[0] = constraints['dp_min']
-    
+    print('ac1')
     ## Handle minimum down payment plus first payment constraint
     if pmt_percentages[0] + pmt_percentages[1] < constraints['dp_plus_first_pmt']:
         pmt_percentages[1] = constraints['dp_plus_first_pmt']-pmt_percentages[0]
-
+    print('ac2')
     # Calculate the equal remaining payments after deducting the down payment, first payment, and custom payments
     n = int(tenor_years * periods_per_year)
     if len(list(input_pmts.values())[1:]) == 0:
         remaining_percentage = (1 - pmt_percentages[0] - pmt_percentages[1] - sum(list(input_pmts.values())[2:])) / (n - 1)
     else:
         remaining_percentage = (1 - pmt_percentages[0] - pmt_percentages[1] - sum(list(input_pmts.values())[2:])) / (n - len(list(input_pmts.values())[1:]))
-    
+    print('ac3')
     for k, v in input_pmts.items():
         if k==0 or k==1:
             continue
         pmt_percentages[k] = v
     pmt_percentages = [p if p!=0 else remaining_percentage for p in pmt_percentages]
-    
+    print('ac4')
     ## Handle first year minimum constraint
     first_year_payments = pmt_percentages[:periods_per_year+1]
     
     if sum(first_year_payments) < constraints['first_year_min']:
         pmt_percentages[periods_per_year] = constraints['first_year_min'] - sum(first_year_payments[:-1])
-
+    print('ac5')
     if sum(pmt_percentages) > 1:
         sum_after_first_year = sum(pmt_percentages[periods_per_year+1:])
-        
+        print('ac6')
         total_custom_payments_after_first_year = 0
         num_custom_payments_after_first_year = 0
         
@@ -190,15 +190,15 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
                 continue
             total_custom_payments_after_first_year += pmt_percentages[k]
             num_custom_payments_after_first_year += 1
-        
+        print('ac7')
         excess = sum(pmt_percentages) - 1
         
         new_remaining_percentage = (sum_after_first_year-total_custom_payments_after_first_year-excess) / (len(pmt_percentages[periods_per_year+1:]) - num_custom_payments_after_first_year)
-        
+        print('ac8')
         for i, pmt in enumerate(pmt_percentages[periods_per_year+1:]):
             if pmt == remaining_percentage:
                 pmt_percentages[periods_per_year+1+i] = new_remaining_percentage
-        
+        print('ac9')
         remaining_percentage = new_remaining_percentage
     
     ## Handle cumulative minimum constraint 
@@ -208,10 +208,10 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
         
         if sum(cummulative_payments) < (year * constraints['annual_min']) + constraints['first_year_min']:
             pmt_percentages[(year+1)*periods_per_year] = (year * constraints['annual_min']) + constraints['first_year_min'] - sum(cummulative_payments[:-1])
-
+    print('ac10')
     ## Handle cash till delivery constraint
     years_till_delivery = caclulate_years_till_delivery(contract_date, delivery_date)
-    
+    print('ac11')
     ctd_mins = constraints['ctd_min']
     ctd_mins = {float(k):v for k, v in ctd_mins.items()}
     
@@ -222,10 +222,10 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
     delivery_payment_index = round(years_till_delivery * periods_per_year)
     
     payments_till_delivery = pmt_percentages[:delivery_payment_index+1]
-    
+    print('ac12')
     if sum(payments_till_delivery) < ctd:
         pmt_percentages[delivery_payment_index] = ctd - sum(payments_till_delivery[:-1])
-
+    print('ac13')
     if sum(pmt_percentages) > 1:
         sum_after_delivery = sum(pmt_percentages[delivery_payment_index+1:])
         total_custom_payments_after_delivery = 0
@@ -236,13 +236,13 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
             total_custom_payments_after_delivery += pmt_percentages[k]
             num_custom_payments_after_delivery += 1
         excess = sum(pmt_percentages) - 1
-        
+        print('ac14')
         new_remaining_percentage = (sum_after_delivery-total_custom_payments_after_delivery-excess) / (len(pmt_percentages[delivery_payment_index+1:]) - num_custom_payments_after_delivery)
         
         for i, pmt in enumerate(pmt_percentages[delivery_payment_index+1:]):
             if pmt == remaining_percentage:
                 pmt_percentages[delivery_payment_index+1+i] = new_remaining_percentage
-        
+        print('ac15')
         remaining_percentage = new_remaining_percentage
         
     return pmt_percentages
