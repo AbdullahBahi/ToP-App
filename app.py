@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, json
 
 from utils import calculate_installments, get_units_data
 
@@ -32,7 +32,8 @@ def calculate_installments_api():
             contract_date=contract_date,
             input_pmts=input_pmts,
         )
-        return jsonify(payment_schedule), 200
+        json_data = json.dumps(payment_schedule, sort_keys=False)
+        return json_data, 200
     except Exception as e:
         return jsonify({'error': str(e)}), 400
 
