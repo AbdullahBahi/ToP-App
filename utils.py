@@ -30,7 +30,7 @@ def get_units_data(unit_code):
     penthouse_area = unit_data.loc[unit_data['Unit Code'] == unit_code, 'Penthouse Area'].values[0]
     roof_terrace_area = unit_data.loc[unit_data['Unit Code'] == unit_code, 'Penthouse Area'].values[0] + unit_data.loc[unit_data['Unit Code'] == unit_code, 'Roof Terraces Area'].values[0]
     delivery_date = unit_data.loc[unit_data['Unit Code'] == unit_code, 'Development Delivery Date'].values[0]
-    base_price = unit_data.loc[unit_data['Unit Code'] == unit_code, 'Interest Free Unit Price include club'].values[0]
+    base_price = unit_data.loc[unit_data['Unit Code'] == unit_code, 'Interest Free Unit Price'].values[0]
     maintenance_percentage = unit_data.loc[unit_data['Unit Code'] == unit_code, 'Maintenance %'].values[0]
     unit_info = {
         'Project Name': project_name,
@@ -155,33 +155,36 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
     ## Handle minimum down payment constraint
     if pmt_percentages[0] < constraints['dp_min']:
         pmt_percentages[0] = constraints['dp_min']
-    
+    print('ac1')
     ## Handle minimum down payment plus first payment constraint
     if pmt_percentages[0] + pmt_percentages[1] < constraints['dp_plus_first_pmt']:
         pmt_percentages[1] = constraints['dp_plus_first_pmt']-pmt_percentages[0]
-
+    print('ac2')
     # Calculate the equal remaining payments after deducting the down payment, first payment, and custom payments
     n = int(tenor_years * periods_per_year)
-    if len(list(input_pmts.values())[1:]) == 0:
+    print(n)
+    if n == 1:
+        remaining_percentage = 1 - pmt_percentages[0] - pmt_percentages[1]
+    elif len(list(input_pmts.values())[1:]) == 0 and n!=1:
         remaining_percentage = (1 - pmt_percentages[0] - pmt_percentages[1] - sum(list(input_pmts.values())[2:])) / (n - 1)
     else:
         remaining_percentage = (1 - pmt_percentages[0] - pmt_percentages[1] - sum(list(input_pmts.values())[2:])) / (n - len(list(input_pmts.values())[1:]))
-    
+    print('ac3')
     for k, v in input_pmts.items():
         if k==0 or k==1:
             continue
         pmt_percentages[k] = v
     pmt_percentages = [p if p!=0 else remaining_percentage for p in pmt_percentages]
-    
+    print('ac4')
     ## Handle first year minimum constraint
     first_year_payments = pmt_percentages[:periods_per_year+1]
     
     if sum(first_year_payments) < constraints['first_year_min']:
         pmt_percentages[periods_per_year] = constraints['first_year_min'] - sum(first_year_payments[:-1])
-
+    print('ac5')
     if sum(pmt_percentages) > 1:
         sum_after_first_year = sum(pmt_percentages[periods_per_year+1:])
-        
+        print('ac6')
         total_custom_payments_after_first_year = 0
         num_custom_payments_after_first_year = 0
         
@@ -190,15 +193,15 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
                 continue
             total_custom_payments_after_first_year += pmt_percentages[k]
             num_custom_payments_after_first_year += 1
-        
+        print('ac7')
         excess = sum(pmt_percentages) - 1
         
         new_remaining_percentage = (sum_after_first_year-total_custom_payments_after_first_year-excess) / (len(pmt_percentages[periods_per_year+1:]) - num_custom_payments_after_first_year)
-        
+        print('ac8')
         for i, pmt in enumerate(pmt_percentages[periods_per_year+1:]):
             if pmt == remaining_percentage:
                 pmt_percentages[periods_per_year+1+i] = new_remaining_percentage
-        
+        print('ac9')
         remaining_percentage = new_remaining_percentage
     
     ## Handle cumulative minimum constraint 
@@ -208,10 +211,10 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
         
         if sum(cummulative_payments) < (year * constraints['annual_min']) + constraints['first_year_min']:
             pmt_percentages[(year+1)*periods_per_year] = (year * constraints['annual_min']) + constraints['first_year_min'] - sum(cummulative_payments[:-1])
-
+    print('ac10')
     ## Handle cash till delivery constraint
     years_till_delivery = caclulate_years_till_delivery(contract_date, delivery_date)
-    
+    print('ac11')
     ctd_mins = constraints['ctd_min']
     ctd_mins = {float(k):v for k, v in ctd_mins.items()}
     
@@ -222,10 +225,15 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
     delivery_payment_index = round(years_till_delivery * periods_per_year)
     
     payments_till_delivery = pmt_percentages[:delivery_payment_index+1]
-    
+    print('ac12')
+    print("delivery_payment_index", delivery_payment_index)
+    print(len(pmt_percentages), pmt_percentages)
     if sum(payments_till_delivery) < ctd:
-        pmt_percentages[delivery_payment_index] = ctd - sum(payments_till_delivery[:-1])
-
+        if delivery_payment_index >= len(pmt_percentages):
+            pmt_percentages[-1] = ctd - sum(payments_till_delivery[:-1])
+        else:
+            pmt_percentages[delivery_payment_index] = ctd - sum(payments_till_delivery[:-1])
+    print('ac13')
     if sum(pmt_percentages) > 1:
         sum_after_delivery = sum(pmt_percentages[delivery_payment_index+1:])
         total_custom_payments_after_delivery = 0
@@ -236,16 +244,18 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
             total_custom_payments_after_delivery += pmt_percentages[k]
             num_custom_payments_after_delivery += 1
         excess = sum(pmt_percentages) - 1
-        
+        print('ac14')
         new_remaining_percentage = (sum_after_delivery-total_custom_payments_after_delivery-excess) / (len(pmt_percentages[delivery_payment_index+1:]) - num_custom_payments_after_delivery)
         
         for i, pmt in enumerate(pmt_percentages[delivery_payment_index+1:]):
             if pmt == remaining_percentage:
                 pmt_percentages[delivery_payment_index+1+i] = new_remaining_percentage
-        
+        print('ac15')
         remaining_percentage = new_remaining_percentage
-        
-    return pmt_percentages
+    
+    if sum(pmt_percentages) < 1:
+        pmt_percentages[-1] = 1 - sum(pmt_percentages[:-1])
+    return pmt_percentages, delivery_payment_index
 
 # Calculate installment payment amounts and dates
 def calculate_installments(unit_info, tenor_years, payment_frequency, contract_date, input_pmts):
@@ -256,6 +266,7 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
     base_dp = project_policy['base_dp']
     base_tenor_years = project_policy['base_tenor_years']
     base_payment_frequency = project_policy['base_payment_frequency']
+    base_periods_per_year = PERIODS_PER_YEAR[base_payment_frequency.lower()]
     max_discount = project_policy['constraints']['max_discount']
     maintenance_fee_percent = unit_info['Maintenance Fee']
 
@@ -271,7 +282,7 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
         tenor_years = max_tenor_years
     elif tenor_years == 0:
         tenor_years = base_tenor_years
-
+    print('A')
     if project_policy['use_static_base_npv']:
         base_npvs = project_policy['base_npv']
         base_npvs = {float(k):v for k, v in base_npvs.items()}
@@ -282,7 +293,6 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
         ## CALCULATING BASE NPV
         ########################################################
         # Calculate number of base payments
-        base_periods_per_year = PERIODS_PER_YEAR[base_payment_frequency.lower()]
         n_base = int(base_tenor_years * base_periods_per_year)
         
         # Create a list with the down payment, the custom paymants, and the auto-filled payments, representing the final schedule of payments
@@ -290,7 +300,7 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
         base_percentages[0] = base_dp
         
         # Apply constraints on the calculated list of payment percentages
-        base_percentages = apply_constraints(base_percentages, base_tenor_years, base_periods_per_year, {}, project_policy['constraints'], contract_date, unit_info['Delivery Date'])
+        base_percentages, delivery_payment_index = apply_constraints(base_percentages, base_tenor_years, base_periods_per_year, {}, project_policy['constraints'], contract_date, unit_info['Delivery Date'])
         
         # Calculate discount rate for the period
         base_period_rate = calculate_period_rate(interest_rate, base_periods_per_year)
@@ -299,6 +309,7 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
         base_npv = base_dp
         for i, pmt_percent in enumerate(base_percentages[1:], start=1):
             base_npv += pmt_percent * (1 + base_period_rate) ** (-i)
+    print('B')
     ########################################################
     ## CALCULATING NEW NPV
     ########################################################
@@ -307,14 +318,16 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
     n = int(tenor_years * periods_per_year)
 
     excess_input = 0
-    for k, v in input_pmts.copy().items():
-        if k > n:
-            excess_input += input_pmts[k]
-            del input_pmts[k]
-    input_pmts[n] = excess_input
-
+    if len(input_pmts) != 0:
+        for k in input_pmts.copy().keys():
+            if k > n:
+                excess_input += input_pmts[k]
+                del input_pmts[k]
+        if excess_input > 0:
+            input_pmts[n] = excess_input
+    print(len(input_pmts), input_pmts)
     # Extract down payment
-    if len(input_pmts) == 0:
+    if len(input_pmts) == 0 or 0 not in input_pmts.keys():
         dp_percentage = base_dp
     else:
         dp_percentage = input_pmts[0]
@@ -324,7 +337,7 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
     calculated_pmt_percentages[0] = dp_percentage
 
     # Apply constraints on the calculated list of payment percentages
-    calculated_pmt_percentages = apply_constraints(calculated_pmt_percentages, tenor_years, periods_per_year, input_pmts, project_policy['constraints'], contract_date, unit_info['Delivery Date'])
+    calculated_pmt_percentages, delivery_payment_index = apply_constraints(calculated_pmt_percentages, tenor_years, periods_per_year, input_pmts, project_policy['constraints'], contract_date, unit_info['Delivery Date'])
     
     # Calculate discount rate for the period
     period_rate = calculate_period_rate(interest_rate, periods_per_year)
@@ -332,7 +345,7 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
     new_npv = calculated_pmt_percentages[0]
     for i, pmt_percent in enumerate(calculated_pmt_percentages[1:], start=1):
         new_npv += pmt_percent * (1 + period_rate) ** (-i)
-    
+    print('C')
     ########################################################
     ## CALCULATING PAYMENTS SCHEDULE
     ########################################################
@@ -346,12 +359,25 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
     pmt_amounts = [percent * price_with_interest for percent in calculated_pmt_percentages]
     print(2)
     # Calculate gas payments 
+    print(project_policy['gas_policy']['num_pmts'])
+    print(periods_per_year)
+    print(base_periods_per_year)
+    project_policy['gas_policy']['num_pmts'] = int(round(project_policy['gas_policy']['num_pmts'] * periods_per_year/base_periods_per_year))
+    if project_policy['gas_policy']['num_pmts'] < 1:
+        project_policy['gas_policy']['num_pmts'] = 1
+    print(project_policy['gas_policy']['num_pmts'])
+    
     if project_policy['gas_policy']['is_applied']:
         gas_payments = calculate_gas_payments(project_policy['gas_policy'], tenor_years, periods_per_year, contract_date, unit_info['Delivery Date'])
     else:
         gas_payments = gas_payments = [0,]*(n+1)
     print(3)
-    # Calculate maintenance payments 
+    # Calculate maintenance payments
+    project_policy['maintenance_policy']['num_pmts'] = int(round(project_policy['maintenance_policy']['num_pmts'] * periods_per_year/base_periods_per_year))
+    if project_policy['maintenance_policy']['num_pmts'] < 1:
+        project_policy['maintenance_policy']['num_pmts'] = 1
+    print(project_policy['maintenance_policy']['num_pmts']) 
+    
     if project_policy['maintenance_policy']['is_applied']:
         maintenance_payments = calculate_maintenance_payments(project_policy['maintenance_policy'], maintenance_fee_percent * price_with_interest, tenor_years, periods_per_year, contract_date, unit_info['Delivery Date'])
     else:
@@ -371,13 +397,13 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
     if len(gas_payments) > len(pmt_type) or len(maintenance_payments) > len(pmt_type):
         pmt_type += ["PMT "+str(i+1+len(pmt_type)) for i in range(max(len(gas_payments)-len(pmt_type), len(maintenance_payments)-len(pmt_type)))] 
         print(71, len(pmt_type))
-        pmt_dates += ['',] * max(len(gas_payments)-len(pmt_dates), len(maintenance_payments)-len(pmt_dates))
+        pmt_dates += [(contract_date + timedelta(days=int(365 / periods_per_year) * (i+len(pmt_dates)))).strftime("%Y-%m-%d") for i in range(max(len(gas_payments)-len(pmt_dates), len(maintenance_payments)-len(pmt_dates)))]
         print(72, len(pmt_dates))
         calculated_pmt_percentages += [0,] * max(len(gas_payments)-len(calculated_pmt_percentages), len(maintenance_payments)-len(calculated_pmt_percentages))
         print(73, len(calculated_pmt_percentages))
         pmt_amounts += [0,] * max(len(gas_payments)-len(pmt_amounts), len(maintenance_payments)-len(pmt_amounts))
         print(74, len(pmt_amounts))
-        cumulative_pmt_percent += [0,] * max(len(gas_payments)-len(cumulative_pmt_percent), len(maintenance_payments)-len(cumulative_pmt_percent))
+        cumulative_pmt_percent += [1,] * max(len(gas_payments)-len(cumulative_pmt_percent), len(maintenance_payments)-len(cumulative_pmt_percent))
         print(75, len(cumulative_pmt_percent))
         if len(gas_payments) < len(pmt_type):
             print(1)
@@ -405,6 +431,7 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
         "Price With Interest": price_with_interest,
         "Increase/Decrease Percentage": percentage_change,
         "Maintenance Fee": maintenance_fee_percent * price_with_interest,
+        "delivery_payment_index": delivery_payment_index,
         "PMT Type":pmt_type,
         "Payment Date":pmt_dates,
         "Payment Percentage":calculated_pmt_percentages,
