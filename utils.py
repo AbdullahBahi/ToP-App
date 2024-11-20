@@ -226,8 +226,13 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
     
     payments_till_delivery = pmt_percentages[:delivery_payment_index+1]
     print('ac12')
+    print("delivery_payment_index", delivery_payment_index)
+    print(len(pmt_percentages), pmt_percentages)
     if sum(payments_till_delivery) < ctd:
-        pmt_percentages[delivery_payment_index] = ctd - sum(payments_till_delivery[:-1])
+        if delivery_payment_index >= len(pmt_percentages):
+            pmt_percentages[-1] = ctd - sum(payments_till_delivery[:-1])
+        else:
+            pmt_percentages[delivery_payment_index] = ctd - sum(payments_till_delivery[:-1])
     print('ac13')
     if sum(pmt_percentages) > 1:
         sum_after_delivery = sum(pmt_percentages[delivery_payment_index+1:])
