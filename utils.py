@@ -245,7 +245,7 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
         print('ac15')
         remaining_percentage = new_remaining_percentage
         
-    return pmt_percentages
+    return pmt_percentages, delivery_payment_index
 
 # Calculate installment payment amounts and dates
 def calculate_installments(unit_info, tenor_years, payment_frequency, contract_date, input_pmts):
@@ -290,7 +290,7 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
         base_percentages[0] = base_dp
         
         # Apply constraints on the calculated list of payment percentages
-        base_percentages = apply_constraints(base_percentages, base_tenor_years, base_periods_per_year, {}, project_policy['constraints'], contract_date, unit_info['Delivery Date'])
+        base_percentages, delivery_payment_index = apply_constraints(base_percentages, base_tenor_years, base_periods_per_year, {}, project_policy['constraints'], contract_date, unit_info['Delivery Date'])
         
         # Calculate discount rate for the period
         base_period_rate = calculate_period_rate(interest_rate, base_periods_per_year)
@@ -327,7 +327,7 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
     calculated_pmt_percentages[0] = dp_percentage
 
     # Apply constraints on the calculated list of payment percentages
-    calculated_pmt_percentages = apply_constraints(calculated_pmt_percentages, tenor_years, periods_per_year, input_pmts, project_policy['constraints'], contract_date, unit_info['Delivery Date'])
+    calculated_pmt_percentages, delivery_payment_index = apply_constraints(calculated_pmt_percentages, tenor_years, periods_per_year, input_pmts, project_policy['constraints'], contract_date, unit_info['Delivery Date'])
     
     # Calculate discount rate for the period
     period_rate = calculate_period_rate(interest_rate, periods_per_year)
@@ -407,6 +407,7 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
         "Price With Interest": price_with_interest,
         "Increase/Decrease Percentage": percentage_change,
         "Maintenance Fee": maintenance_fee_percent * price_with_interest,
+        "delivery_payment_index": delivery_payment_index,
         "PMT Type":pmt_type,
         "Payment Date":pmt_dates,
         "Payment Percentage":calculated_pmt_percentages,
