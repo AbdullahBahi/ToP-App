@@ -3,6 +3,8 @@ from flask import Flask, request, jsonify
 from utils import calculate_installments, get_units_data
 
 app = Flask(__name__)
+# Disable global JSON sorting
+app.config['JSON_SORT_KEYS'] = False
 
 @app.route('/calculate_installments', methods=['POST'])
 def calculate_installments_api():

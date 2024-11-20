@@ -33,17 +33,17 @@ def get_units_data(unit_code):
     base_price = unit_data.loc[unit_data['Unit Code'] == unit_code, 'Interest Free Unit Price include club'].values[0]
     maintenance_percentage = unit_data.loc[unit_data['Unit Code'] == unit_code, 'Maintenance %'].values[0]
     unit_info = {
-        'Unit Code': unit_code,
         'Project Name': project_name,
-        'No. of Bed Rooms': ensure_serializable(n_bedrooms),
+        'Unit Code': unit_code,
+        'Base Price': ensure_serializable(base_price),
+        'Delivery Date': ensure_serializable(delivery_date),
         'Finishing Type': finishing,
+        'No. of Bed Rooms': ensure_serializable(n_bedrooms),
+        'Maintenance Fee': ensure_serializable(maintenance_percentage),
         'Gross Area (sqm)': ensure_serializable(gross_area),
         'Garden Area': ensure_serializable(garden_area),
         'Penthouse Area': ensure_serializable(penthouse_area),
         'Open Terrace / Roof Area': ensure_serializable(roof_terrace_area),
-        'Delivery Date': ensure_serializable(delivery_date),
-        'Base Price': ensure_serializable(base_price),
-        'Maintenance Fee': ensure_serializable(maintenance_percentage),
         'Project Policy':project_policy
     }
     return unit_info
@@ -396,6 +396,7 @@ def calculate_installments(unit_info, tenor_years, payment_frequency, contract_d
     print("cumulative_pmt_percent", len(cumulative_pmt_percent))
     print("gas_payments", len(gas_payments))
     print("maintenance_payments", len(maintenance_payments))
+    unit_info['Maintenance Fee'] = maintenance_fee_percent * price_with_interest
     payemnts_schedule = {
         "Unit Info": unit_info,
         "Discount Rate [Per Period]": period_rate,
