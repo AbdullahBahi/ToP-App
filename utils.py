@@ -158,15 +158,20 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
     print('ac1')
 
     if n == 1:
+        print("ac11")
         remaining_percentage1 = 1 - pmt_percentages[0]
     else:
+        print("ac2")
         remaining_percentage1 = (1 - pmt_percentages[0] - sum(list(input_pmts.values()))) / (n - len(list(input_pmts.values())))
-
+    
     for k, v in input_pmts.items():
         if k==0:
             continue
         pmt_percentages[k] = v
+        print("ac1loop: ", k)
+    print("Before: ", pmt_percentages)
     pmt_percentages = [p if p!=0 else remaining_percentage1 for p in pmt_percentages]
+    print("After: ", pmt_percentages)
 
     ## Handle minimum down payment plus first payment constraint
     if pmt_percentages[0] + pmt_percentages[1] < constraints['dp_plus_first_pmt']:
