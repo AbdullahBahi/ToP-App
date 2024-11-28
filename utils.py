@@ -160,7 +160,7 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
     # Calculate the equal remaining payments after deducting the down payment, and custom payments
     n = int(tenor_years * periods_per_year)
     print(n) 
-    
+
     if n == 1:
         print("ac11")
         remaining_percentage1 = 1 - pmt_percentages[0]
@@ -193,6 +193,7 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
             continue
         pmt_percentages[k] = v
     pmt_percentages = [p if p!=remaining_percentage1 else remaining_percentage2 for p in pmt_percentages]
+    print("pmt_percentages after ac3: ", pmt_percentages)
     print('ac4')
     ## Handle first year minimum constraint
     first_year_payments = pmt_percentages[:periods_per_year+1]
@@ -220,7 +221,7 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
             if pmt == remaining_percentage2:
                 pmt_percentages[periods_per_year+1+i] = remaining_percentage3
         print('ac9')
-    
+        print("pmt_percentages after ac9: ", pmt_percentages)
     ## Handle cumulative minimum constraint 
     for year in range(tenor_years):
         # year_payments = pmt_percentages[(year*periods_per_year)+1:((year+1)*periods_per_year)+1]
@@ -244,7 +245,7 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
     payments_till_delivery = pmt_percentages[:delivery_payment_index+1]
     print('ac12')
     print("delivery_payment_index", delivery_payment_index)
-    print(len(pmt_percentages), pmt_percentages)
+    
     if sum(payments_till_delivery) < ctd:
         if delivery_payment_index >= len(pmt_percentages):
             pmt_percentages[-1] = ctd - sum(payments_till_delivery[:-1])
@@ -268,6 +269,7 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
             if pmt == remaining_percentage3:
                 pmt_percentages[delivery_payment_index+1+i] = remaining_percentage4
         print('ac15')
+        print("pmt_percentages after ac15: ", pmt_percentages)
     
     if sum(pmt_percentages) < 1:
         pmt_percentages[-1] = 1 - sum(pmt_percentages[:-1])
