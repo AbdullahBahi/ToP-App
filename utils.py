@@ -176,13 +176,14 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
     print("Before: ", pmt_percentages)
     pmt_percentages = [p if p!=0 else remaining_percentage1 for p in pmt_percentages]
     print("After: ", pmt_percentages)
-
+    if 1 in input_pmts.keys():
+        del input_pmts[1]
+        print("removed FP")
     ## Handle minimum down payment plus first payment constraint
     if pmt_percentages[0] + pmt_percentages[1] < constraints['dp_plus_first_pmt']:
         pmt_percentages[1] = constraints['dp_plus_first_pmt']-pmt_percentages[0]
     print('ac2')
     # Calculate the equal remaining payments after deducting the down payment, first payment, and custom payments
-
     if n == 1:
         remaining_percentage2 = 1 - pmt_percentages[0] - pmt_percentages[1]
     else:
