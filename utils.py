@@ -97,13 +97,15 @@ def calculate_gas_payments(policy, tenor_years, periods_per_year, contract_date,
     scheduling = policy['scheduling']
 
     years_till_delivery = caclulate_years_till_delivery(contract_date, delivery_date)
-
+    print('years_till_delivery: ', years_till_delivery)
     # Select gas fee
     fees = policy['fees']
     fees = {float(k):v for k, v in fees.items()}
 
     diffs = {abs(years_till_delivery-k):v for k, v in fees.items()}
     gas_fee = diffs[min(diffs.keys())]
+
+    print('gas_fee: ', gas_fee)
 
     # Select offset
     offsets = policy['offsets']
@@ -112,17 +114,25 @@ def calculate_gas_payments(policy, tenor_years, periods_per_year, contract_date,
     diffs = {abs(years_till_delivery-k):v for k, v in offsets.items()}
     offset = offsets[min(diffs.keys())] * periods_per_year
 
+    print('offset: ', offset)
+
     # Schedule gas fee
     delivery_payment_index = round(years_till_delivery * periods_per_year)
+    
+    print('delivery_payment_index: ', delivery_payment_index)
 
     if delivery_payment_index - offset > 0:
         delivery_payment_index = delivery_payment_index - offset
+
+    print('delivery_payment_index: ', delivery_payment_index)
 
     if years_till_delivery > tenor_years:
         n = delivery_payment_index
     else:
         n = tenor_years * periods_per_year
     
+    print('n: ', n)
+
     gas_payments = [0,]*(n+1)
 
     if scheduling == "at_delivery":
