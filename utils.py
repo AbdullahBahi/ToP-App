@@ -108,10 +108,12 @@ def calculate_gas_payments(policy, tenor_years, periods_per_year, contract_date,
     print('gas_fee: ', gas_fee)
 
     # Select offset
+    print(policy)
     offsets = policy['offsets']
     offsets = {float(k):v for k, v in offsets.items()}
-
+    print(offsets)
     diffs = {abs(years_till_delivery-k):v for k, v in offsets.items()}
+    print(diffs)
     offset = offsets[min(diffs.keys())] * periods_per_year
 
     print('offset: ', offset)
