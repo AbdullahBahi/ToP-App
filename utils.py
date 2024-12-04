@@ -286,6 +286,7 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
         if year+1 < years_till_delivery:
             continue
         print('year+1: ', year+1)
+        print("cummulative_payments: ", pmt_percentages[:((year+1)*periods_per_year)+1])
         # year_payments = pmt_percentages[(year*periods_per_year)+1:((year+1)*periods_per_year)+1]
         cummulative_payments = pmt_percentages[:((year+1)*periods_per_year)+1]
         print('sum of cummulative_payments: ', sum(cummulative_payments))
