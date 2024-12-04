@@ -165,9 +165,12 @@ def calculate_maintenance_payments(policy, maintenance_fee, tenor_years, periods
     if scheduling == "at_delivery":
         maintenance_payments[delivery_payment_index] = maintenance_fee
     elif scheduling == "before_delivery":
-        maintenance_pmt = maintenance_fee / num_pmts 
-        for i in range(num_pmts):
-            maintenance_payments[delivery_payment_index+i-num_pmts] = maintenance_pmt
+        if delivery_payment_index-num_pmts < 0:
+            maintenance_payments[delivery_payment_index] = maintenance_fee
+        else:
+            maintenance_pmt = maintenance_fee / num_pmts 
+            for i in range(num_pmts):
+                maintenance_payments[delivery_payment_index+i-num_pmts] = maintenance_pmt
 
     return maintenance_payments
 
