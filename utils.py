@@ -249,7 +249,7 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
         remaining_percentages.append(remaining_percentage3)
         print('ac8')
         for i, pmt in enumerate(pmt_percentages[periods_per_year+1:]):
-            if pmt == remaining_percentage2:
+            if pmt in remaining_percentages:
                 pmt_percentages[periods_per_year+1+i] = remaining_percentage3
         print('ac9')
         print("pmt_percentages after ac9: ", pmt_percentages)
@@ -300,10 +300,11 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
         excess = sum(pmt_percentages) - 1
         print('ac14')
         remaining_percentage4 = (sum_after_delivery-total_custom_payments_after_delivery-excess) / (len(pmt_percentages[delivery_payment_index+1:]) - num_custom_payments_after_delivery)
+        print(remaining_percentage4)
         remaining_percentages.append(remaining_percentage4)
-
+        print(remaining_percentages)
         for i, pmt in enumerate(pmt_percentages[delivery_payment_index+1:]):
-            if pmt == remaining_percentage2 or pmt == remaining_percentage3:
+            if pmt in remaining_percentages:
                 pmt_percentages[delivery_payment_index+1+i] = remaining_percentage4
         print('ac15')
         print("pmt_percentages after ac15: ", pmt_percentages)
