@@ -191,6 +191,8 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
         print("ac12")
         remaining_percentage1 = (1 - pmt_percentages[0] - sum(list(input_pmts.values()))) / (n - len(list(input_pmts.values())))
     
+    remaining_percentages = [remaining_percentage1]
+
     for k, v in input_pmts.items():
         if k==0:
             continue
@@ -211,6 +213,7 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
         remaining_percentage2 = 1 - pmt_percentages[0] - pmt_percentages[1]
     else:
         remaining_percentage2 = (1 - pmt_percentages[0] - pmt_percentages[1] - sum(list(input_pmts.values()))) / (n - 1 - len(list(input_pmts.values())))
+    remaining_percentages.append(remaining_percentage2)
     print('ac3')
     for k, v in input_pmts.items():
         if k==0 or k==1:
@@ -240,6 +243,7 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
         excess = sum(pmt_percentages) - 1
         
         remaining_percentage3 = (sum_after_first_year-total_custom_payments_after_first_year-excess) / (len(pmt_percentages[periods_per_year+1:]) - num_custom_payments_after_first_year)
+        remaining_percentages.append(remaining_percentage3)
         print('ac8')
         for i, pmt in enumerate(pmt_percentages[periods_per_year+1:]):
             if pmt == remaining_percentage2:
@@ -280,18 +284,6 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
     print('ac13')
 
     print("peyments till delivery: ", pmt_percentages[:delivery_payment_index+1])
-    ## Handle cumulative minimum constraint - After CTD
-    print('years_till_delivery: ', years_till_delivery)
-    for year in range(tenor_years):
-        if year+1 < years_till_delivery:
-            continue
-        print('year+1: ', year+1)
-        print("cummulative_payments: ", pmt_percentages[:((year+1)*periods_per_year)+1])
-        # year_payments = pmt_percentages[(year*periods_per_year)+1:((year+1)*periods_per_year)+1]
-        cummulative_payments = pmt_percentages[:((year+1)*periods_per_year)+1]
-        print('sum of cummulative_payments: ', sum(cummulative_payments))
-        if sum(cummulative_payments) < (year * constraints['annual_min']) + constraints['first_year_min']:
-            pmt_percentages[(year+1)*periods_per_year] = (year * constraints['annual_min']) + constraints['first_year_min'] - sum(cummulative_payments[:-1])
     
     if sum(pmt_percentages) > 1:
         sum_after_delivery = sum(pmt_percentages[delivery_payment_index+1:])
@@ -305,12 +297,44 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
         excess = sum(pmt_percentages) - 1
         print('ac14')
         remaining_percentage4 = (sum_after_delivery-total_custom_payments_after_delivery-excess) / (len(pmt_percentages[delivery_payment_index+1:]) - num_custom_payments_after_delivery)
-        
+        remaining_percentages.append(remaining_percentage4)
+
         for i, pmt in enumerate(pmt_percentages[delivery_payment_index+1:]):
-            if pmt == remaining_percentage3:
+            if pmt == remaining_percentage2 or pmt == remaining_percentage3:
                 pmt_percentages[delivery_payment_index+1+i] = remaining_percentage4
         print('ac15')
         print("pmt_percentages after ac15: ", pmt_percentages)
+    
+    ## Handle cumulative minimum constraint - After CTD
+    print('years_till_delivery: ', years_till_delivery)
+    for year in range(tenor_years):
+        if year+1 < years_till_delivery:
+            continue
+        print('year+1: ', year+1)
+        print("cummulative_payments: ", pmt_percentages[:((year+1)*periods_per_year)+1])
+        # year_payments = pmt_percentages[(year*periods_per_year)+1:((year+1)*periods_per_year)+1]
+        cummulative_payments = pmt_percentages[:((year+1)*periods_per_year)+1]
+        print('sum of cummulative_payments: ', sum(cummulative_payments))
+        if sum(cummulative_payments) < (year * constraints['annual_min']) + constraints['first_year_min']:
+            pmt_percentages[(year+1)*periods_per_year] = (year * constraints['annual_min']) + constraints['first_year_min'] - sum(cummulative_payments[:-1])
+
+            if sum(pmt_percentages) > 1:
+                adjustment_index = ((year+1)*periods_per_year)
+                sum_after_adjustment = sum(pmt_percentages[adjustment_index+1:])
+                total_custom_payments_after_adjustment = 0
+                num_custom_payments_after_adjustment = 0
+                for k in input_pmts.keys():
+                    if k <= adjustment_index:
+                        continue
+                    total_custom_payments_after_adjustment += pmt_percentages[k]
+                    num_custom_payments_after_adjustment += 1
+                excess = sum(pmt_percentages) - 1
+                remaining_percentage_after_adjustment = (sum_after_adjustment-total_custom_payments_after_adjustment-excess) / (len(pmt_percentages[adjustment_index+1:]) - num_custom_payments_after_adjustment)
+                remaining_percentages.append(remaining_percentage_after_adjustment)
+
+                for i, pmt in enumerate(pmt_percentages[delivery_payment_index+1:]):
+                    if pmt in remaining_percentages:
+                        pmt_percentages[adjustment_index+1+i] = remaining_percentage_after_adjustment
     
     if sum(pmt_percentages) < 1:
         pmt_percentages[-1] = 1 - sum(pmt_percentages[:-1])
