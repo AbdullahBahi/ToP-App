@@ -280,12 +280,14 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
     print('ac13')
 
     ## Handle cumulative minimum constraint - After CTD
+    print('years_till_delivery: ', years_till_delivery)
     for year in range(tenor_years):
         if year+1 < years_till_delivery:
             continue
+        print('year+1: ', year+1)
         # year_payments = pmt_percentages[(year*periods_per_year)+1:((year+1)*periods_per_year)+1]
         cummulative_payments = pmt_percentages[:((year+1)*periods_per_year)+1]
-        
+        print('sum of cummulative_payments: ', sum(cummulative_payments))
         if sum(cummulative_payments) < (year * constraints['annual_min']) + constraints['first_year_min']:
             pmt_percentages[(year+1)*periods_per_year] = (year * constraints['annual_min']) + constraints['first_year_min'] - sum(cummulative_payments[:-1])
     
