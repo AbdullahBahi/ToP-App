@@ -246,8 +246,11 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
                 pmt_percentages[periods_per_year+1+i] = remaining_percentage3
         print('ac9')
         print("pmt_percentages after ac9: ", pmt_percentages)
-    ## Handle cumulative minimum constraint 
+    ## Handle cumulative minimum constraint - before CTD
+    years_till_delivery = caclulate_years_till_delivery(contract_date, delivery_date)
     for year in range(tenor_years):
+        if year+1 > years_till_delivery:
+            break
         # year_payments = pmt_percentages[(year*periods_per_year)+1:((year+1)*periods_per_year)+1]
         cummulative_payments = pmt_percentages[:((year+1)*periods_per_year)+1]
         
@@ -255,7 +258,6 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
             pmt_percentages[(year+1)*periods_per_year] = (year * constraints['annual_min']) + constraints['first_year_min'] - sum(cummulative_payments[:-1])
     print('ac10')
     ## Handle cash till delivery constraint
-    years_till_delivery = caclulate_years_till_delivery(contract_date, delivery_date)
     print('ac11')
     ctd_mins = constraints['ctd_min']
     ctd_mins = {float(k):v for k, v in ctd_mins.items()}
@@ -276,6 +278,17 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
         else:
             pmt_percentages[delivery_payment_index] = ctd - sum(payments_till_delivery[:-1])
     print('ac13')
+
+    ## Handle cumulative minimum constraint - After CTD
+    for year in range(tenor_years):
+        if year+1 < years_till_delivery:
+            continue
+        # year_payments = pmt_percentages[(year*periods_per_year)+1:((year+1)*periods_per_year)+1]
+        cummulative_payments = pmt_percentages[:((year+1)*periods_per_year)+1]
+        
+        if sum(cummulative_payments) < (year * constraints['annual_min']) + constraints['first_year_min']:
+            pmt_percentages[(year+1)*periods_per_year] = (year * constraints['annual_min']) + constraints['first_year_min'] - sum(cummulative_payments[:-1])
+    
     if sum(pmt_percentages) > 1:
         sum_after_delivery = sum(pmt_percentages[delivery_payment_index+1:])
         total_custom_payments_after_delivery = 0
