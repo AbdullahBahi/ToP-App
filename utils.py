@@ -332,7 +332,7 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
                 remaining_percentage_after_adjustment = (sum_after_adjustment-total_custom_payments_after_adjustment-excess) / (len(pmt_percentages[adjustment_index+1:]) - num_custom_payments_after_adjustment)
                 remaining_percentages.append(remaining_percentage_after_adjustment)
 
-                for i, pmt in enumerate(pmt_percentages[delivery_payment_index+1:]):
+                for i, pmt in enumerate(pmt_percentages[adjustment_index+1:]):
                     if pmt in remaining_percentages:
                         pmt_percentages[adjustment_index+1+i] = remaining_percentage_after_adjustment
     
