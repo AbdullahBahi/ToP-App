@@ -279,6 +279,7 @@ def apply_constraints(pmt_percentages, tenor_years, periods_per_year, input_pmts
             pmt_percentages[delivery_payment_index] = ctd - sum(payments_till_delivery[:-1])
     print('ac13')
 
+    print("peyments till delivery: ", pmt_percentages[:delivery_payment_index+1])
     ## Handle cumulative minimum constraint - After CTD
     print('years_till_delivery: ', years_till_delivery)
     for year in range(tenor_years):
