@@ -46,7 +46,17 @@
     "maintenance_policy":{
         "is_applied":true,
         "num_pmts":3,
-        "scheduling":"before_delivery"
+        "scheduling":{
+            "0.25":"at_delivery",
+            "0.5":"at_delivery",
+            "0.75":"at_delivery",
+            "1.0":"at_delivery",
+            "1.5":"before_delivery",
+            "2.0":"before_delivery",
+            "2.5":"before_delivery",
+            "3.0":"before_delivery",
+            "3.5":"before_delivery"
+        }
     },
     "constraints":{
         "dp_min":0.05,

@@ -150,9 +150,16 @@ def calculate_gas_payments(policy, tenor_years, periods_per_year, contract_date,
 def calculate_maintenance_payments(policy, maintenance_fee, tenor_years, periods_per_year, contract_date, delivery_date):
     num_pmts = policy['num_pmts']
     scheduling = policy['scheduling']
+
+    years_till_delivery = caclulate_years_till_delivery(contract_date, delivery_date)
+    # Select gas fee
+    scheduling = policy['scheduling']
+    scheduling = {float(k):v for k, v in scheduling.items()}
+
+    diffs = {abs(years_till_delivery-k):v for k, v in scheduling.items()}
+    scheduling = diffs[min(diffs.keys())]
     
     # Schedule maintenance fee
-    years_till_delivery = caclulate_years_till_delivery(contract_date, delivery_date)
     delivery_payment_index = round(years_till_delivery * periods_per_year)
     
     if years_till_delivery > tenor_years:
